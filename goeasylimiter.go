@@ -40,7 +40,7 @@ type EasyLimiter struct {
 	wg sync.WaitGroup // waitGroup 用于等待协程执行完成, 并关闭通道\清理资源
 
 	jobChan    chan Job         // Job 队列(实现接口即可, 解耦了任务的具体实现)
-	resultChan chan interface{} // job执行结果队列
+	ResultChan chan interface{} // job执行结果队列
 }
 
 func NewEasyLimiter(taskCount, limit int) *EasyLimiter {
@@ -50,7 +50,7 @@ func NewEasyLimiter(taskCount, limit int) *EasyLimiter {
 
 	c := &EasyLimiter{
 		semp:       make(chan struct{}, limit),
-		resultChan: make(chan interface{}, taskCount),
+		ResultChan: make(chan interface{}, taskCount),
 		jobChan:    make(chan Job, taskCount),
 	}
 
@@ -77,7 +77,7 @@ func NewEasyLimiter(taskCount, limit int) *EasyLimiter {
 				if err != nil {
 					fmt.Printf("err:%v", err)
 				}
-				c.resultChan <- result
+				c.ResultChan <- result
 
 			}(job)
 		}
@@ -98,5 +98,5 @@ func (c *EasyLimiter) Wait() {
 	close(c.jobChan)
 	c.wg.Wait()
 	// 关闭result队列,以保证range方式读取chan 程序会正常向下执行
-	close(c.resultChan)
+	close(c.ResultChan)
 }

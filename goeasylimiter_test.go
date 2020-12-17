@@ -53,7 +53,7 @@ func TestNewEasyLimiter(t *testing.T) {
 	go func() {
 		for {
 			select {
-			case result, ok:= <- limiter.resultChan:
+			case result, ok:= <- limiter.ResultChan:
 				log.Info("read from result chan", zap.Any("result", result))
 				if !ok{
 					log.Info("result chan 关闭/读取完成, 退出当前goroutine")
